@@ -16,8 +16,93 @@
         * {
             box-sizing: border-box;
         }
-        .glossary-content { display: none; }
-        .glossary-content.active { display: block; }
+        
+        /* Glossary Toggle */
+        .glossary-content { 
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                        opacity 0.3s ease,
+                        padding 0.3s ease;
+        }
+        .glossary-content.active { 
+            max-height: 2000px;
+            opacity: 1;
+            padding-top: 0.5rem;
+            padding-bottom: 1.5rem;
+        }
+        
+        /* Keyword Tooltip Styles */
+        .abbr-tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+        
+        .abbr-tooltip .tooltip-text {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 500;
+            white-space: nowrap;
+            z-index: 1000;
+            box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4), 0 8px 10px -6px rgba(59, 130, 246, 0.2);
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            pointer-events: none;
+        }
+        
+        .abbr-tooltip .tooltip-text::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 6px;
+            border-style: solid;
+            border-color: #3b82f6 transparent transparent transparent;
+        }
+        
+        .abbr-tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        .abbr-highlight {
+            background: linear-gradient(120deg, #dbeafe 0%, #bfdbfe 100%);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #1e40af;
+            border-bottom: 2px solid #3b82f6;
+            transition: all 0.3s ease;
+        }
+        
+        .abbr-highlight:hover {
+            background: linear-gradient(120deg, #bfdbfe 0%, #93c5fd 100%);
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        /* Mobile tooltip adjustments */
+        @media (max-width: 640px) {
+            .abbr-tooltip .tooltip-text {
+                font-size: 10px;
+                padding: 6px 10px;
+                max-width: 200px;
+                white-space: normal;
+                text-align: center;
+            }
+        }
         
         .floating-contact {
             position: fixed;
@@ -106,8 +191,21 @@
             gap: 1.25rem;
         }
         
-        /* Extra Small Devices (320px - 480px) */
+        /* Responsive Glossary Grid */
+        .glossary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.75rem;
+            justify-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
         @media (max-width: 480px) {
+            .glossary-grid {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
             .floating-contact {
                 bottom: 12px;
                 right: 12px;
@@ -131,42 +229,42 @@
             }
         }
         
-        /* Small Phones (481px - 640px) */
         @media (min-width: 481px) and (max-width: 640px) {
+            .glossary-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
             .presentation-grid {
                 grid-template-columns: 1fr;
             }
         }
         
-        /* Tablets Portrait (641px - 768px) */
         @media (min-width: 641px) and (max-width: 768px) {
+            .glossary-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
             .presentation-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
         
-        /* Tablets Landscape & Small Laptops (769px - 1024px) */
         @media (min-width: 769px) and (max-width: 1024px) {
+            .glossary-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
             .presentation-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
         
-        /* Laptops (1025px - 1440px) */
-        @media (min-width: 1025px) and (max-width: 1440px) {
+        @media (min-width: 1025px) {
+            .glossary-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
             .presentation-grid {
                 grid-template-columns: repeat(3, 1fr);
             }
         }
         
-        /* Large Screens (1441px+) */
-        @media (min-width: 1441px) {
-            .presentation-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-        
-        /* Ultra Wide (2560px+) */
         @media (min-width: 2560px) {
             body {
                 font-size: 18px;
@@ -177,7 +275,6 @@
             }
         }
         
-        /* Landscape Mobile Optimization */
         @media (max-height: 500px) and (orientation: landscape) {
             .floating-contact {
                 flex-direction: row;
@@ -190,7 +287,6 @@
             }
         }
         
-        /* Print Styles */
         @media print {
             .floating-contact {
                 display: none;
@@ -234,12 +330,16 @@
                 <div class="order-2 lg:order-1 text-center lg:text-left">
                     <div class="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-500/30 rounded-full px-2.5 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 mb-3 sm:mb-4 md:mb-6 tag-hover">
                         <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        <span class="text-emerald-300 text-[10px] sm:text-xs md:text-sm font-medium">UAE Employment Residence Visa – Authorized to Work</span>
+                        <span class="text-emerald-300 text-[10px] sm:text-xs md:text-sm font-medium">
+                            <span class="abbr-tooltip">
+                                <span>UAE</span>
+                            </span> Employment Residence Visa – Authorized to Work</span>
                     </div>
                     
                     <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-2 sm:mb-3 md:mb-4 leading-tight">KRUNAL PIPWALA</h1>
                     <p class="text-base sm:text-lg md:text-xl lg:text-2xl text-slate-300 mb-3 sm:mb-4 md:mb-6">
-                        Senior Project Manager | Investment Operations | PMO Manager
+                        Senior Project Manager | Investment Operations | 
+                        PMO Manager
                     </p>
                     
                     <p class="text-sm sm:text-base md:text-lg text-slate-400 mb-5 sm:mb-6 md:mb-8 leading-relaxed max-w-xl mx-auto lg:mx-0">
@@ -275,7 +375,8 @@
                         </span>
                         <span class="flex items-center gap-1.5 sm:gap-2">
                             <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                            <span class="whitespace-nowrap">Dubai, UAE (Onsite)</span>
+                            <span class="whitespace-nowrap">Dubai, UAE
+                            </span> (Onsite)</span>
                         </span>
                     </div>
                 </div>
@@ -582,6 +683,111 @@
         </div>
     </section>
 
+    <!-- Glossary Section -->
+    <section class="py-3 sm:py-4 bg-gradient-to-r from-blue-50 via-blue-50 to-indigo-50 border-y border-blue-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <button onclick="toggleGlossary()" class="w-full flex items-center justify-between py-3 sm:py-4 text-left btn-hover rounded-xl px-3 sm:px-4 group">
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <div class="p-2 sm:p-2.5 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-blue-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                    </div>
+                    <span class="font-semibold text-slate-900 text-xs sm:text-sm md:text-base lg:text-lg">
+                        Quick Reference Guide - Abbreviations & Terms
+                    </span>
+                </div>
+                <svg id="glossary-arrow" class="w-5 h-5 sm:w-6 sm:h-6 text-slate-600 transition-transform duration-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </button>
+            
+            <div id="glossary-content" class="glossary-content">
+                <div class="glossary-grid">
+                    <div class="bg-white rounded-xl p-3 sm:p-4 border border-blue-100 shadow-sm w-full max-w-xs card-hover">
+                        <div class="flex items-start gap-2 sm:gap-3">
+                            <span class="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm shadow-md flex-shrink-0">PMO</span>
+                            <span class="text-slate-700 text-xs sm:text-sm font-medium leading-relaxed">Project Management Office</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl p-3 sm:p-4 border border-blue-100 shadow-sm w-full max-w-xs card-hover">
+                        <div class="flex items-start gap-2 sm:gap-3">
+                            <span class="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm shadow-md flex-shrink-0">SOP</span>
+                            <span class="text-slate-700 text-xs sm:text-sm font-medium leading-relaxed">Standard Operating Procedure</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl p-3 sm:p-4 border border-blue-100 shadow-sm w-full max-w-xs card-hover">
+                        <div class="flex items-start gap-2 sm:gap-3">
+                            <span class="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm shadow-md flex-shrink-0">KPI</span>
+                            <span class="text-slate-700 text-xs sm:text-sm font-medium leading-relaxed">Key Performance Indicator</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl p-3 sm:p-4 border border-blue-100 shadow-sm w-full max-w-xs card-hover">
+                        <div class="flex items-start gap-2 sm:gap-3">
+                            <span class="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm shadow-md flex-shrink-0">RACI</span>
+                            <span class="text-slate-700 text-xs sm:text-sm font-medium leading-relaxed">Responsible, Accountable, Consulted, Informed</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl p-3 sm:p-4 border border-blue-100 shadow-sm w-full max-w-xs card-hover">
+                        <div class="flex items-start gap-2 sm:gap-3">
+                            <span class="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm shadow-md flex-shrink-0">SLA</span>
+                            <span class="text-slate-700 text-xs sm:text-sm font-medium leading-relaxed">Service Level Agreement</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl p-3 sm:p-4 border border-blue-100 shadow-sm w-full max-w-xs card-hover">
+                        <div class="flex items-start gap-2 sm:gap-3">
+                            <span class="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm shadow-md flex-shrink-0">ERP</span>
+                            <span class="text-slate-700 text-xs sm:text-sm font-medium leading-relaxed">Enterprise Resource Planning</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl p-3 sm:p-4 border border-blue-100 shadow-sm w-full max-w-xs card-hover">
+                        <div class="flex items-start gap-2 sm:gap-3">
+                            <span class="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm shadow-md flex-shrink-0">HCM</span>
+                            <span class="text-slate-700 text-xs sm:text-sm font-medium leading-relaxed">Human Capital Management</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl p-3 sm:p-4 border border-blue-100 shadow-sm w-full max-w-xs card-hover">
+                        <div class="flex items-start gap-2 sm:gap-3">
+                            <span class="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm shadow-md flex-shrink-0">CRM</span>
+                            <span class="text-slate-700 text-xs sm:text-sm font-medium leading-relaxed">Customer Relationship Management</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl p-3 sm:p-4 border border-blue-100 shadow-sm w-full max-w-xs card-hover">
+                        <div class="flex items-start gap-2 sm:gap-3">
+                            <span class="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm shadow-md flex-shrink-0">RPA</span>
+                            <span class="text-slate-700 text-xs sm:text-sm font-medium leading-relaxed">Robotic Process Automation</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl p-3 sm:p-4 border border-blue-100 shadow-sm w-full max-w-xs card-hover">
+                        <div class="flex items-start gap-2 sm:gap-3">
+                            <span class="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm shadow-md flex-shrink-0">ATS</span>
+                            <span class="text-slate-700 text-xs sm:text-sm font-medium leading-relaxed">Applicant Tracking System</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl p-3 sm:p-4 border border-blue-100 shadow-sm w-full max-w-xs card-hover">
+                        <div class="flex items-start gap-2 sm:gap-3">
+                            <span class="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm shadow-md flex-shrink-0">PMP</span>
+                            <span class="text-slate-700 text-xs sm:text-sm font-medium leading-relaxed">Project Management Professional</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl p-3 sm:p-4 border border-blue-100 shadow-sm w-full max-w-xs card-hover">
+                        <div class="flex items-start gap-2 sm:gap-3">
+                            <span class="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm shadow-md flex-shrink-0">UAE</span>
+                            <span class="text-slate-700 text-xs sm:text-sm font-medium leading-relaxed">United Arab Emirates</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Professional Experience -->
     <section class="py-10 sm:py-12 md:py-16 bg-slate-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -594,7 +800,7 @@
                 <!-- Current Role - Coral Wealth -->
                 <div class="bg-white rounded-xl border-2 border-emerald-200 p-4 sm:p-5 md:p-6 shadow-lg card-hover">
                     <div class="flex items-start justify-between flex-wrap gap-2 mb-3 sm:mb-4">
-                        <span class="bg-emerald-500 text-white px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-semibold tag-hover">CURRENT ROLE • ONSITE UAE</span>
+                        <span class="bg-emerald-500 text-white px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-semibold tag-hover">CURRENT ROLE • ONSITE Dubai, UAE
                     </div>
                     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 sm:gap-4 mb-3 sm:mb-4">
                         <div>
@@ -621,7 +827,16 @@
                         </li>
                         <li class="flex items-start gap-2">
                             <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path></svg>
-                            Develop SOPs, RACI matrices, and KPI dashboards aligned with UAE compliance
+                            Develop <span class="abbr-tooltip">
+                                <span class="abbr-highlight">SOPs</span>
+                                <span class="tooltip-text">Standard Operating Procedures</span>
+                            </span>, <span class="abbr-tooltip">
+                                <span class="abbr-highlight">RACI</span>
+                                <span class="tooltip-text">Responsible, Accountable, Consulted, Informed</span>
+                            </span> matrices, and <span class="abbr-tooltip">
+                                <span class="abbr-highlight">KPI</span>
+                                <span class="tooltip-text">Key Performance Indicator</span>
+                            </span> dashboards aligned with UAE compliance
                         </li>
                     </ul>
                     <div class="flex flex-wrap gap-1.5 sm:gap-2">
@@ -651,7 +866,10 @@
                     </div>
                     <ul class="text-slate-600 text-xs sm:text-sm space-y-1">
                         <li>• Coordinated delivery of high-compliance technology programs</li>
-                        <li>• Implemented KPI frameworks, risk tracking, and executive dashboards</li>
+                        <li>• Implemented <span class="abbr-tooltip">
+                                <span class="abbr-highlight">KPI</span>
+                                <span class="tooltip-text">Key Performance Indicator</span>
+                            </span> frameworks, risk tracking, and executive dashboards</li>
                         <li>• Delivered 100% program compliance with client and regulatory standards</li>
                     </ul>
                 </div>
@@ -671,7 +889,10 @@
                     </div>
                     <ul class="text-slate-600 text-xs sm:text-sm space-y-1">
                         <li>• Coordinated pilot programs for wearable technology deployments</li>
-                        <li>• Developed SOPs for data privacy, safety, and regulatory compliance</li>
+                        <li>• Developed <span class="abbr-tooltip">
+                                <span class="abbr-highlight">SOPs</span>
+                                <span class="tooltip-text">Standard Operating Procedures</span>
+                            </span> for data privacy, safety, and regulatory compliance</li>
                         <li>• <strong>Impact:</strong> Reduced escalations by 45%, saving CAD 115,000 annually</li>
                     </ul>
                 </div>
@@ -689,7 +910,10 @@
                         </div>
                     </div>
                     <ul class="text-slate-600 text-xs sm:text-sm space-y-1">
-                        <li>• Led operational execution across recruitment and CRM delivery programs</li>
+                        <li>• Led operational execution across recruitment and <span class="abbr-tooltip">
+                                <span class="abbr-highlight">CRM</span>
+                                <span class="tooltip-text">Customer Relationship Management</span>
+                            </span> delivery programs</li>
                         <li>• Coordinated 160+ project cycles covering onboarding, automation, and reporting</li>
                         <li>• <strong>Results:</strong> 35% throughput increase, revenue growth from USD 1.8M to USD 2.43M quarterly</li>
                     </ul>
@@ -708,8 +932,17 @@
                         </div>
                     </div>
                     <ul class="text-slate-600 text-xs sm:text-sm space-y-1">
-                        <li>• Supported operational delivery for ERP, HCM, and process reengineering engagements</li>
-                        <li>• Coordinated SOP development, workflow automation, and internal audits</li>
+                        <li>• Supported operational delivery for <span class="abbr-tooltip">
+                                <span class="abbr-highlight">ERP</span>
+                                <span class="tooltip-text">Enterprise Resource Planning</span>
+                            </span>, <span class="abbr-tooltip">
+                                <span class="abbr-highlight">HCM</span>
+                                <span class="tooltip-text">Human Capital Management</span>
+                            </span>, and process reengineering engagements</li>
+                        <li>• Coordinated <span class="abbr-tooltip">
+                                <span class="abbr-highlight">SOP</span>
+                                <span class="tooltip-text">Standard Operating Procedure</span>
+                            </span> development, workflow automation, and internal audits</li>
                     </ul>
                 </div>
 
@@ -747,7 +980,13 @@
                     </div>
                     <ul class="text-slate-600 text-xs sm:text-sm space-y-1">
                         <li>• Delivered remote project management and operations consulting across technology, recruitment, and services firms</li>
-                        <li>• Designed SOPs, PMO frameworks, and automation workflows</li>
+                        <li>• Designed <span class="abbr-tooltip">
+                                <span class="abbr-highlight">SOPs</span>
+                                <span class="tooltip-text">Standard Operating Procedures</span>
+                            </span>, <span class="abbr-tooltip">
+                                <span class="abbr-highlight">PMO</span>
+                                <span class="tooltip-text">Project Management Office</span>
+                            </span> frameworks, and automation workflows</li>
                         <li>• Achieved up to 60% efficiency gains across multiple engagements</li>
                     </ul>
                 </div>
@@ -767,7 +1006,10 @@
                 <div class="p-4 sm:p-5 md:p-6 rounded-xl bg-slate-50 border border-slate-200 card-hover">
                     <h3 class="font-bold text-slate-900 mb-3 pb-2 border-b border-slate-200 text-xs sm:text-sm md:text-base">Project & Program Management</h3>
                     <ul class="space-y-1.5 sm:space-y-2 text-slate-600 text-[11px] sm:text-xs md:text-sm">
-                        <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path></svg>PMO Execution & Governance</li>
+                        <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path></svg><span class="abbr-tooltip">
+                                <span class="abbr-highlight">PMO</span>
+                                <span class="tooltip-text">Project Management Office</span>
+                            </span> Execution & Governance</li>
                         <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path></svg>Investment Operations Support</li>
                         <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path></svg>Portfolio & Performance Reporting</li>
                         <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path></svg>Risk Assessment & Controls</li>
@@ -777,7 +1019,10 @@
                 <div class="p-4 sm:p-5 md:p-6 rounded-xl bg-slate-50 border border-slate-200 card-hover">
                     <h3 class="font-bold text-slate-900 mb-3 pb-2 border-b border-slate-200 text-xs sm:text-sm md:text-base">Governance & Compliance</h3>
                     <ul class="space-y-1.5 sm:space-y-2 text-slate-600 text-[11px] sm:text-xs md:text-sm">
-                        <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path></svg>SOP & Governance Frameworks</li>
+                        <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path></svg><span class="abbr-tooltip">
+                                <span class="abbr-highlight">SOP</span>
+                                <span class="tooltip-text">Standard Operating Procedure</span>
+                            </span> & Governance Frameworks</li>
                         <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path></svg>UAE Labour Law Compliance</li>
                         <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path></svg>Vendor & Contract Management</li>
                         <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path></svg>Budget Tracking & Cost Control</li>
@@ -789,7 +1034,10 @@
                     <ul class="space-y-1.5 sm:space-y-2 text-slate-600 text-[11px] sm:text-xs md:text-sm">
                         <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path></svg>Cross-Functional Team Leadership</li>
                         <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path></svg>Stakeholder & Investor Coordination</li>
-                        <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path></svg>KPI Dashboards & Reporting</li>
+                        <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path></svg><span class="abbr-tooltip">
+                                <span class="abbr-highlight">KPI</span>
+                                <span class="tooltip-text">Key Performance Indicator</span>
+                            </span> Dashboards & Reporting</li>
                         <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path></svg>Executive Decision Support</li>
                     </ul>
                 </div>
@@ -828,23 +1076,38 @@
                 <div class="p-3 sm:p-4 rounded-xl bg-white border border-slate-200 card-hover">
                     <h3 class="font-bold text-slate-900 mb-2 sm:mb-3 text-xs sm:text-sm">Enterprise & HR Systems</h3>
                     <div class="flex flex-wrap gap-1 sm:gap-1.5">
-                        <span class="bg-slate-100 px-1.5 sm:px-2 py-0.5 rounded text-[10px] sm:text-xs text-slate-700 tag-hover">Workday HCM</span>
+                        <span class="bg-slate-100 px-1.5 sm:px-2 py-0.5 rounded text-[10px] sm:text-xs text-slate-700 tag-hover">Workday <span class="abbr-tooltip">
+                                <span class="abbr-highlight">HCM</span>
+                                <span class="tooltip-text">Human Capital Management</span>
+                            </span></span>
                         <span class="bg-slate-100 px-1.5 sm:px-2 py-0.5 rounded text-[10px] sm:text-xs text-slate-700 tag-hover">BambooHR</span>
                         <span class="bg-slate-100 px-1.5 sm:px-2 py-0.5 rounded text-[10px] sm:text-xs text-slate-700 tag-hover">ADP</span>
-                        <span class="bg-slate-100 px-1.5 sm:px-2 py-0.5 rounded text-[10px] sm:text-xs text-slate-700 tag-hover">ATS Platforms</span>
+                        <span class="bg-slate-100 px-1.5 sm:px-2 py-0.5 rounded text-[10px] sm:text-xs text-slate-700 tag-hover"><span class="abbr-tooltip">
+                                <span class="abbr-highlight">ATS</span>
+                                <span class="tooltip-text">Applicant Tracking System</span>
+                            </span> Platforms</span>
                     </div>
                 </div>
                 <div class="p-3 sm:p-4 rounded-xl bg-white border border-slate-200 card-hover">
                     <h3 class="font-bold text-slate-900 mb-2 sm:mb-3 text-xs sm:text-sm">Automation & Cloud</h3>
                     <div class="flex flex-wrap gap-1 sm:gap-1.5">
                         <span class="bg-slate-100 px-1.5 sm:px-2 py-0.5 rounded text-[10px] sm:text-xs text-slate-700 tag-hover">Zapier</span>
-                        <span class="bg-slate-100 px-1.5 sm:px-2 py-0.5 rounded text-[10px] sm:text-xs text-slate-700 tag-hover">RPA</span>
+                        <span class="bg-slate-100 px-1.5 sm:px-2 py-0.5 rounded text-[10px] sm:text-xs text-slate-700 tag-hover"><span class="abbr-tooltip">
+                                <span class="abbr-highlight">RPA</span>
+                                <span class="tooltip-text">Robotic Process Automation</span>
+                            </span></span>
                         <span class="bg-slate-100 px-1.5 sm:px-2 py-0.5 rounded text-[10px] sm:text-xs text-slate-700 tag-hover">Azure</span>
                         <span class="bg-slate-100 px-1.5 sm:px-2 py-0.5 rounded text-[10px] sm:text-xs text-slate-700 tag-hover">AWS</span>
                     </div>
                 </div>
                 <div class="p-3 sm:p-4 rounded-xl bg-white border border-slate-200 card-hover">
-                    <h3 class="font-bold text-slate-900 mb-2 sm:mb-3 text-xs sm:text-sm">CRM & ERP</h3>
+                    <h3 class="font-bold text-slate-900 mb-2 sm:mb-3 text-xs sm:text-sm"><span class="abbr-tooltip">
+                                <span class="abbr-highlight">CRM</span>
+                                <span class="tooltip-text">Customer Relationship Management</span>
+                            </span> & <span class="abbr-tooltip">
+                                <span class="abbr-highlight">ERP</span>
+                                <span class="tooltip-text">Enterprise Resource Planning</span>
+                            </span></h3>
                     <div class="flex flex-wrap gap-1 sm:gap-1.5">
                         <span class="bg-slate-100 px-1.5 sm:px-2 py-0.5 rounded text-[10px] sm:text-xs text-slate-700 tag-hover">Salesforce</span>
                         <span class="bg-slate-100 px-1.5 sm:px-2 py-0.5 rounded text-[10px] sm:text-xs text-slate-700 tag-hover">SAP</span>
@@ -927,7 +1190,10 @@
                         <li class="flex items-start gap-2 sm:gap-3">
                             <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 text-amber-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             <div class="flex-1 min-w-0">
-                                <span class="font-medium text-slate-900 text-xs sm:text-sm md:text-base block mb-1">PMP Certification</span>
+                                <span class="font-medium text-slate-900 text-xs sm:text-sm md:text-base block mb-1"><span class="abbr-tooltip">
+                                <span class="abbr-highlight">PMP</span>
+                                <span class="tooltip-text">Project Management Professional</span>
+                            </span> Certification</span>
                                 <span class="text-slate-500 text-[10px] sm:text-xs md:text-sm block mb-2">In Progress (Target: 2026)</span>
                                 <a href="https://www.udemy.com/course/pmp-certification-exam-prep-course-pmbok-6th-edition/" target="_blank" rel="noopener noreferrer" class="cert-btn cert-btn-amber">
                                     <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
@@ -936,60 +1202,6 @@
                             </div>
                         </li>
                     </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Glossary Section -->
-    <section class="py-3 sm:py-4 bg-blue-50 border-y border-blue-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <button onclick="toggleGlossary()" class="w-full flex items-center justify-between py-2 sm:py-3 text-left btn-hover rounded-lg px-2">
-                <div class="flex items-center gap-2 sm:gap-3">
-                    <svg class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-blue-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                    <span class="font-semibold text-slate-900 text-xs sm:text-sm md:text-base">Quick Reference Guide - Abbreviations & Terms</span>
-                </div>
-                <svg id="glossary-arrow" class="w-4 h-4 sm:w-5 sm:h-5 text-slate-600 transition-transform flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-            </button>
-            
-            <div id="glossary-content" class="glossary-content pb-4 sm:pb-6 pt-2">
-                <div class="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1.5 sm:gap-2">
-                    <div class="bg-white rounded-lg p-1.5 sm:p-2 border border-blue-100 text-[10px] sm:text-xs card-hover">
-                        <span class="bg-blue-600 text-white font-bold px-1 sm:px-1.5 py-0.5 rounded mr-1 sm:mr-2">PMO</span>Project Management Office
-                    </div>
-                    <div class="bg-white rounded-lg p-1.5 sm:p-2 border border-blue-100 text-[10px] sm:text-xs card-hover">
-                        <span class="bg-blue-600 text-white font-bold px-1 sm:px-1.5 py-0.5 rounded mr-1 sm:mr-2">SOP</span>Standard Operating Procedure
-                    </div>
-                    <div class="bg-white rounded-lg p-1.5 sm:p-2 border border-blue-100 text-[10px] sm:text-xs card-hover">
-                        <span class="bg-blue-600 text-white font-bold px-1 sm:px-1.5 py-0.5 rounded mr-1 sm:mr-2">KPI</span>Key Performance Indicator
-                    </div>
-                    <div class="bg-white rounded-lg p-1.5 sm:p-2 border border-blue-100 text-[10px] sm:text-xs card-hover">
-                        <span class="bg-blue-600 text-white font-bold px-1 sm:px-1.5 py-0.5 rounded mr-1 sm:mr-2">RACI</span>Responsible, Accountable, Consulted, Informed
-                    </div>
-                    <div class="bg-white rounded-lg p-1.5 sm:p-2 border border-blue-100 text-[10px] sm:text-xs card-hover">
-                        <span class="bg-blue-600 text-white font-bold px-1 sm:px-1.5 py-0.5 rounded mr-1 sm:mr-2">SLA</span>Service Level Agreement
-                    </div>
-                    <div class="bg-white rounded-lg p-1.5 sm:p-2 border border-blue-100 text-[10px] sm:text-xs card-hover">
-                        <span class="bg-blue-600 text-white font-bold px-1 sm:px-1.5 py-0.5 rounded mr-1 sm:mr-2">ERP</span>Enterprise Resource Planning
-                    </div>
-                    <div class="bg-white rounded-lg p-1.5 sm:p-2 border border-blue-100 text-[10px] sm:text-xs card-hover">
-                        <span class="bg-blue-600 text-white font-bold px-1 sm:px-1.5 py-0.5 rounded mr-1 sm:mr-2">HCM</span>Human Capital Management
-                    </div>
-                    <div class="bg-white rounded-lg p-1.5 sm:p-2 border border-blue-100 text-[10px] sm:text-xs card-hover">
-                        <span class="bg-blue-600 text-white font-bold px-1 sm:px-1.5 py-0.5 rounded mr-1 sm:mr-2">CRM</span>Customer Relationship Management
-                    </div>
-                    <div class="bg-white rounded-lg p-1.5 sm:p-2 border border-blue-100 text-[10px] sm:text-xs card-hover">
-                        <span class="bg-blue-600 text-white font-bold px-1 sm:px-1.5 py-0.5 rounded mr-1 sm:mr-2">RPA</span>Robotic Process Automation
-                    </div>
-                    <div class="bg-white rounded-lg p-1.5 sm:p-2 border border-blue-100 text-[10px] sm:text-xs card-hover">
-                        <span class="bg-blue-600 text-white font-bold px-1 sm:px-1.5 py-0.5 rounded mr-1 sm:mr-2">ATS</span>Applicant Tracking System
-                    </div>
-                    <div class="bg-white rounded-lg p-1.5 sm:p-2 border border-blue-100 text-[10px] sm:text-xs card-hover">
-                        <span class="bg-blue-600 text-white font-bold px-1 sm:px-1.5 py-0.5 rounded mr-1 sm:mr-2">PMP</span>Project Management Professional
-                    </div>
-                    <div class="bg-white rounded-lg p-1.5 sm:p-2 border border-blue-100 text-[10px] sm:text-xs card-hover">
-                        <span class="bg-blue-600 text-white font-bold px-1 sm:px-1.5 py-0.5 rounded mr-1 sm:mr-2">UAE</span>United Arab Emirates
-                    </div>
                 </div>
             </div>
         </div>
@@ -1028,11 +1240,12 @@
                 </span>
                 <span class="flex items-center gap-1.5 sm:gap-2">
                     <svg class="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                    <span class="whitespace-nowrap">Dubai, UAE</span>
+                    <span class="whitespace-nowrap">Dubai, UAE
                 </span>
                 <span class="flex items-center gap-1.5 sm:gap-2">
                     <svg class="w-3 h-3 sm:w-4 sm:h-4 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    <span class="whitespace-nowrap">UAE Employment Residence Visa</span>
+                        <span>UAE</span>
+                            </span> Employment Residence Visa</span>
                 </span>
             </div>
         </div>
@@ -1042,7 +1255,8 @@
     <footer class="bg-slate-900 text-slate-400 py-5 sm:py-6 md:py-8 border-t border-slate-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <p class="text-[10px] sm:text-xs md:text-sm">
-                © 2026 Krunal Pipwala • Senior Project Manager • Dubai, UAE
+                © 2026 Krunal Pipwala • Senior Project Manager • Dubai, <span class="abbr-tooltip">
+                                <span>UAE</span>
             </p>
             <p class="text-[10px] sm:text-xs text-slate-500 mt-1 sm:mt-2">
                 Available for immediate discussions • <a href="tel:+971559759788" class="hover:text-emerald-400 transition-colors whitespace-nowrap">+971 55 975 9788</a>
